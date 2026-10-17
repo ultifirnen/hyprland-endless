@@ -4,7 +4,7 @@ Tiling layout for Hyprland 0.56+ with a Lua config. Windows keep a minimum size:
 
 ## Install
 
-    git clone <repo-url> && cd hyprland-endless && ./install.sh
+    git clone https://github.com/ultifirnen/hyprland-endless.git && cd hyprland-endless && ./install.sh
 
 The script copies endless.lua to ~/.config/hypr/ and appends the layout setting and keybinds to hyprland.lua. It works the same from fish, zsh and bash. Run it again after a git pull to update.
 
