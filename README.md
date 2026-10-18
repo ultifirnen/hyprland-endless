@@ -21,10 +21,11 @@ Then set general.layout back to the layout you used before.
 | SUPER + CTRL + = | zoom in (bigger minimum window size) |
 | SUPER + CTRL + - | zoom out (smaller minimum window size) |
 | SUPER + CTRL + 0 | reset zoom |
+| SUPER + CTRL + F | zoom out just enough to fit every window on screen |
 | SUPER + CTRL + . | center the view on the focused window |
 | SUPER + CTRL + J | toggle split direction of the focused window |
 | SUPER + CTRL + ] / [ | grow / shrink the focused window |
 
 ## Layout messages
 
-Sent with hl.dsp.layout: zoom in, zoom out, zoom reset, min W H, gap PX, follow on, follow off, center, grow, shrink, split.
+Sent with hl.dsp.layout: zoom in, zoom out, zoom reset, zoom fit, min W H, gap PX, follow on, follow off, center, grow, shrink, split.
