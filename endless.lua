@@ -171,6 +171,51 @@ local function active_leaf(S, ctx)
     end
 end
 
+local function first_leaf(node)
+    while node.a do
+        node = node.a
+    end
+    return node
+end
+
+local function leaf_order(node, out)
+    if not node.a then
+        out[#out + 1] = node.id
+        return out
+    end
+    leaf_order(node.a, out)
+    leaf_order(node.b, out)
+    return out
+end
+
+local function place_focus(S, ctx, present, active)
+    local leaf = S.leaves[active]
+    if not leaf then
+        return false
+    end
+    local partner
+    local p = leaf.parent
+    if p then
+        partner = (p.a == leaf) and first_leaf(p.b).id or last_leaf(p.a).id
+    end
+    local idx = {}
+    for i, id in ipairs(leaf_order(S.root, {})) do
+        idx[id] = i
+    end
+    local lo = partner and math.min(idx[active], idx[partner]) or idx[active]
+    local g = cfg.gap
+    local vx, vy = ctx.area.x + g / 2, ctx.area.y + g / 2
+    local vw, vh = math.max(1, ctx.area.w - g), math.max(1, ctx.area.h - g)
+    local cellw = partner and vw / 2 or vw
+    for id, t in pairs(present) do
+        local j = idx[id]
+        if j then
+            t:place({ x = vx + (j - lo) * cellw + g / 2, y = vy + g / 2, w = math.max(1, cellw - g), h = math.max(1, vh - g) })
+        end
+    end
+    return true
+end
+
 hl.layout.register("endless", {
     recalculate = function(ctx)
         if #ctx.targets == 0 then
@@ -183,6 +228,7 @@ hl.layout.register("endless", {
             return
         end
 
+        if S.focus and active and place_focus(S, ctx, present, active) then return end
         local g = cfg.gap
         local vx, vy = ctx.area.x + g / 2, ctx.area.y + g / 2
         local vw, vh = math.max(1, ctx.area.w - g), math.max(1, ctx.area.h - g)
@@ -231,12 +277,14 @@ hl.layout.register("endless", {
 
         if cmd == "refresh" then
             return true
+        elseif cmd == "focus" then
+            if S then S.focus = (a1 == "on") or (a1 ~= "off" and not S.focus) end
         elseif cmd == "zoom" then
             if a1 == "in" then
                 cfg.zoom = clamp(cfg.zoom * 1.15, 0.35, 3.0)
             elseif a1 == "out" then
                 cfg.zoom = clamp(cfg.zoom / 1.15, 0.35, 3.0)
-            elseif a1 == "fit" then cfg.zoom = fit_zoom(S, ctx) elseif a1 == "fit" then cfg.zoom = fit_zoom(S, ctx) elseif a1 == "reset" then
+            elseif a1 == "fit" then cfg.zoom = (cfg.zoom ~= 1.0) and 1.0 or fit_zoom(S, ctx) elseif a1 == "fit" then cfg.zoom = fit_zoom(S, ctx) elseif a1 == "reset" then
                 cfg.zoom = 1.0
             else
                 return "endless: zoom in|out|reset"
@@ -276,7 +324,7 @@ hl.layout.register("endless", {
                 p.dir = (p.dir == "h") and "v" or "h"
             end
         else
-            return "endless: zoom|min|gap|follow|center|grow|shrink|split|refresh"
+            return "endless: focus|zoom|min|gap|follow|center|grow|shrink|split|refresh"
         end
 
         return true
