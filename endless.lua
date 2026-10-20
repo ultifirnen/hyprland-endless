@@ -161,6 +161,7 @@ local function fit(c, p, len, view)
 end
 
 local function fit_zoom(S, ctx) if not S or not S.root then return cfg.zoom end local g = cfg.gap local vw, vh = ctx.area.w - g, ctx.area.h - g local lo, hi = 0.35, 1.0 measure(S.root, cfg.min_w * hi + g, cfg.min_h * hi + g) if S.root.nw <= vw and S.root.nh <= vh then return hi end for _ = 1, 24 do local mid = (lo + hi) / 2 measure(S.root, cfg.min_w * mid + g, cfg.min_h * mid + g) if S.root.nw <= vw and S.root.nh <= vh then lo = mid else hi = mid end end return lo end
+local function fit_zoom(S, ctx) if not S or not S.root then return cfg.zoom end local g = cfg.gap local vw, vh = ctx.area.w - g, ctx.area.h - g local lo, hi = 0.35, 1.0 measure(S.root, cfg.min_w * hi + g, cfg.min_h * hi + g) if S.root.nw <= vw and S.root.nh <= vh then return hi end for _ = 1, 24 do local mid = (lo + hi) / 2 measure(S.root, cfg.min_w * mid + g, cfg.min_h * mid + g) if S.root.nw <= vw and S.root.nh <= vh then lo = mid else hi = mid end end return lo end
 local function active_leaf(S, ctx)
     for _, t in ipairs(ctx.targets) do
         local w = t.window
@@ -235,7 +236,7 @@ hl.layout.register("endless", {
                 cfg.zoom = clamp(cfg.zoom * 1.15, 0.35, 3.0)
             elseif a1 == "out" then
                 cfg.zoom = clamp(cfg.zoom / 1.15, 0.35, 3.0)
-            elseif a1 == "fit" then cfg.zoom = fit_zoom(S, ctx) elseif a1 == "reset" then
+            elseif a1 == "fit" then cfg.zoom = fit_zoom(S, ctx) elseif a1 == "fit" then cfg.zoom = fit_zoom(S, ctx) elseif a1 == "reset" then
                 cfg.zoom = 1.0
             else
                 return "endless: zoom in|out|reset"
